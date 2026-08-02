@@ -1,0 +1,108 @@
+# electron-builder configuration for Nexus AI Pro production release.
+# Signing and notarization secrets are supplied via environment variables in CI
+# (see pro/release/SIGNING.md); nothing secret lives in this file.
+
+appId: com.nexusai.pro
+productName: Nexus AI Pro
+copyright: Copyright © 2026 Nexus AI
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - dist-electron/**/*
+  - package.json
+  - src/splash.html
+  - src/about.html
+
+# The built React renderer (pro/web/dist) ships as the app's UI.
+extraResources:
+  - from: ../web/dist
+    to: renderer
+  - from: build-info.json
+    to: build-info.json
+
+# afterSign runs notarization on macOS (no-op on other platforms / without creds).
+afterSign: notarize.cjs
+
+# ---- Auto-update feed -------------------------------------------------------
+# electron-updater reads the published latest*.yml from this provider.
+publish:
+  - provider: github
+    owner: your-org
+    repo: nexusai-pro
+    releaseType: release
+
+# ---- Windows installer ------------------------------------------------------
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch: [x64, arm64]
+  # Authenticode signing (CI provides CSC_LINK + CSC_KEY_PASSWORD).
+  signingHashAlgorithms: [sha256]
+  rfc3161TimeStampServer: http://timestamp.digicert.com
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Nexus AI Pro
+  include: build/installer.nsh
+  artifactName: ${productName}-Setup-${version}-${arch}.${ext}
+  uninstallDisplayName: Nexus AI Pro ${version}
+
+# ---- macOS bundle -----------------------------------------------------------
+mac:
+  icon: build/icon.icns
+  category: public.app-category.developer-tools
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.inherit.plist
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+    - target: zip
+      arch: [x64, arm64]
+  # notarize is handled by the afterSign hook using APPLE_* env vars.
+
+dmg:
+  title: Nexus AI Pro ${version}
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+# ---- Linux package ----------------------------------------------------------
+linux:
+  icon: build/icons
+  category: Development
+  synopsis: Desktop client for the Nexus AI Pro web-scraping platform
+  description: Nexus AI Pro desktop application.
+  desktop:
+    Name: Nexus AI Pro
+    Comment: Nexus AI Pro desktop client
+    Categories: Development;Utility;
+  target:
+    - target: AppImage
+      arch: [x64, arm64]
+    - target: deb
+      arch: [x64, arm64]
+    - target: rpm
+      arch: [x64]
+
+deb:
+  priority: optional
+  afterInstall: null
+
+appImage:
+  artifactName: ${productName}-${version}-${arch}.${ext}

@@ -1,0 +1,254 @@
+# ---------------------------------------------------------------------------
+# Nexus AI build and tooling configuration.
+#
+# Every tool the project uses is configured here. A single file means a
+# contributor changes formatting, linting, typing or test policy in one place,
+# and CI and local development cannot drift apart.
+# ---------------------------------------------------------------------------
+
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nexusai"
+dynamic = ["version"]
+description = "An enterprise framework for collecting, validating, monitoring and exporting publicly available web data."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [{ name = "Nexus AI Engineering" }]
+keywords = ["scraping", "data-collection", "data-quality", "etl", "framework"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Typing :: Typed",
+]
+
+# Runtime dependencies are limited to what the framework core actually uses.
+# Acquisition, parsing, storage and reporting libraries named in the Master
+# Specification arrive with the phases that introduce them, so that installing
+# Nexus AI never pulls in a browser engine the deployment does not use.
+dependencies = [
+  "pydantic>=2.7,<3",
+  "PyYAML>=6.0,<7",
+  "python-dotenv>=1.0,<2",
+  "loguru>=0.7,<0.8",
+  "typer>=0.12,<0.20",
+  "rich>=13.7,<15",
+  "httpx>=0.27,<0.29",
+  "lxml>=5.2,<6",
+  "cssselect>=1.2,<2",
+  "SQLAlchemy>=2.0,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "black>=24.4",
+  "ruff>=0.5",
+  "mypy>=1.10",
+  "types-PyYAML>=6.0",
+  "pre-commit>=3.7",
+]
+test = [
+  "pytest>=8.2",
+  "pytest-asyncio>=0.23",
+  "pytest-cov>=5.0",
+]
+browser = [
+  "playwright>=1.44,<2",
+]
+excel = [
+  "openpyxl>=3.1,<4",
+]
+parquet = [
+  "pyarrow>=16,<26",
+]
+pdf = [
+  "reportlab>=4.1,<6",
+]
+visual = [
+  "Pillow>=10,<13",
+]
+
+[project.scripts]
+nexusai = "nexusai.presentation.cli.app:run"
+
+[project.urls]
+Documentation = "https://github.com/nexusai/nexusai/tree/main/docs"
+Source = "https://github.com/nexusai/nexusai"
+
+# Plugins advertise themselves under this group. See docs/guides/plugins.md.
+# [project.entry-points."nexusai.plugins"]
+
+[tool.hatch.version]
+path = "src/nexusai/__about__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nexusai"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/config", "/docs", "/README.md", "/LICENSE"]
+
+# ---------------------------------------------------------------------------
+# Formatting
+# ---------------------------------------------------------------------------
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+# ---------------------------------------------------------------------------
+# Linting
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+  "A",    # shadowed builtins
+  "ARG",  # unused arguments
+  "B",    # bugbear
+  "BLE",  # blind except
+  "C4",   # comprehensions
+  "D",    # docstrings
+  "E",    # pycodestyle errors
+  "F",    # pyflakes
+  "I",    # import sorting
+  "N",    # naming
+  "PTH",  # prefer pathlib
+  "RET",  # return simplification
+  "RUF",  # ruff-specific
+  "SIM",  # simplification
+  "T20",  # no stray print()
+  "TRY",  # exception antipatterns
+  "UP",   # pyupgrade
+  "W",    # pycodestyle warnings
+]
+ignore = [
+  "D203",   # conflicts with D211, which we keep
+  "D213",   # conflicts with D212, which we keep
+  "D401",   # imperative mood: too noisy for property docstrings
+  # Magic methods take their meaning from the language, and the Google
+  # convention documents constructor arguments in the class docstring, so
+  # docstrings on __str__ and __init__ add ceremony rather than information.
+  "D105",
+  "D107",
+  "TRY003", # long messages inside raise: our errors are written to be read
+  "TRY400", # logger.error vs logger.exception: decided per call site
+]
+
+[tool.ruff.lint.flake8-bugbear]
+# Typer expresses arguments as call defaults; these are declarative, not the
+# mutable-default hazard B008 targets. typer.Option is allow-listed by default;
+# typer.Argument is added here for the same reason.
+extend-immutable-calls = ["typer.Argument", "typer.Option"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests document themselves through their names; module docstrings on every
+# test file add noise without adding information.
+"tests/**" = [
+  "D100", "D101", "D102", "D103", "D104",
+  "ARG001", "ARG002",  # fixtures are requested for their side effects
+  "ARG005",            # test collaborator lambdas match a signature they ignore
+  "TRY301",            # tests raise inline to set up the condition under test
+]
+# The package initialiser re-exports; unused imports there are the point.
+"src/nexusai/**/__init__.py" = ["F401"]
+# A null object must accept the full signature of the port it satisfies; that
+# its arguments are unused is the entire behaviour.
+"src/nexusai/infrastructure/observability/metrics.py" = ["ARG002"]
+# Workflow stages implement the WorkflowStage protocol; a stage that does not
+# consult the context or workspace still must accept them to satisfy the
+# contract, exactly like a null object.
+"src/nexusai/application/workflow/stages.py" = ["ARG002"]
+# Benchmark scenarios implement the BenchmarkScenario protocol; prepare/execute
+# are self-documenting protocol methods described by the class docstring.
+"src/nexusai/composition/benchmarks.py" = ["D102"]
+# E2E tests prepend the tests dir to sys.path before importing the mock-site
+# helper, so those imports legitimately follow a statement.
+"tests/e2e/*.py" = ["E402"]
+"tests/certification/*.py" = ["E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["nexusai"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+# ---------------------------------------------------------------------------
+# Type checking
+# ---------------------------------------------------------------------------
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src", "tests"]
+mypy_path = "tests"
+strict = true
+warn_unreachable = true
+warn_unused_ignores = true
+show_error_codes = true
+pretty = true
+# Untyped third-party libraries are tolerated only at the infrastructure
+# boundary, never in the domain or application layers.
+disallow_any_explicit = false
+
+[[tool.mypy.overrides]]
+module = ["loguru.*", "lxml.*", "cssselect.*", "playwright.*", "openpyxl.*", "pyarrow.*", "reportlab.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------------------
+# Testing
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = [
+  "--strict-markers",
+  "--strict-config",
+  "-ra",
+  "--cov=nexusai",
+  "--cov-report=term-missing:skip-covered",
+  "--cov-report=xml",
+  "--cov-fail-under=90",
+]
+markers = [
+  "unit: fast, isolated, no I/O beyond a temporary directory",
+  "component: a subsystem exercised with its real internal collaborators",
+  "contract: stable interface behaviour between components, ports, or plugins",
+  "integration: exercises several components together",
+  "e2e: exercises the framework through its public entry points",
+  "regression: protects a specific previously-discovered defect",
+  "security: defensive verification of a security boundary",
+  "performance: verification against Phase 8 benchmark or baseline infrastructure",
+  "browser: requires a real browser binary (not installed in the default environment)",
+  "slow: takes materially longer than a fast unit test",
+]
+asyncio_mode = "strict"
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["src/nexusai"]
+branch = true
+parallel = false
+
+[tool.coverage.report]
+precision = 1
+show_missing = true
+exclude_also = [
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "@overload",
+  # Protocol method bodies are declarations, not code.
+  "^\\s*\\.\\.\\.$",
+]

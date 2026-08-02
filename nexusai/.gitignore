@@ -1,0 +1,38 @@
+# Byte-compiled and build artefacts
+__pycache__/
+*.py[cod]
+*.so
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tooling caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+
+# Secrets and local configuration. Never commit a real .env; commit .env.example.
+.env
+.env.*
+!.env.example
+config/local.yaml
+
+# Framework runtime output: data, artefacts, reports, logs and state.
+.nexusai/
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+.DS_Store

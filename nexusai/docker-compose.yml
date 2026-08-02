@@ -1,0 +1,22 @@
+# Local Nexus AI stack.
+#
+# A single service running the CLI, with the output root persisted to a named
+# volume so datasets, exports, reports and job state survive container restarts.
+# No secrets are hardcoded; supply configuration through the environment or a
+# mounted YAML file. There is no database service because the default persistence
+# backend is embedded SQLite under the data volume.
+services:
+  nexusai:
+    build: .
+    image: nexusai:local
+    environment:
+      NEXUSAI_PATHS__ROOT: /data
+      NEXUSAI_ENVIRONMENT: ${NEXUSAI_ENVIRONMENT:-production}
+    volumes:
+      - nexusai-data:/data
+    # Override at run time, e.g.:
+    #   docker compose run --rm nexusai doctor
+    command: ["doctor"]
+
+volumes:
+  nexusai-data:

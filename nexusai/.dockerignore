@@ -1,0 +1,26 @@
+# Keep the build context small and the image free of host state.
+.git/
+.github/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+dist/
+build/
+*.egg-info/
+
+# Never bake secrets or local runtime output into an image.
+.env
+.env.*
+!.env.example
+.nexusai/
+
+docs/
+*.md
+!README.md

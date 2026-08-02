@@ -1,0 +1,83 @@
+/* Nexus AI Pro — documentation theme polish */
+
+:root {
+  --md-primary-fg-color:        #0f766e;
+  --md-primary-fg-color--light: #14b8a6;
+  --md-primary-fg-color--dark:  #0c5c56;
+  --md-accent-fg-color:         #0d9488;
+}
+
+/* Slightly tighter, more editorial typography */
+.md-typeset h1 { font-weight: 800; letter-spacing: -0.02em; }
+.md-typeset h2 { font-weight: 700; letter-spacing: -0.01em; margin-top: 2em; }
+
+/* ---- Landing hero ---------------------------------------------------------- */
+.hk-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.6rem;
+  padding: 2.4rem 1rem 1.2rem;
+}
+.hk-hero__logo { width: 96px; height: 96px; filter: drop-shadow(0 6px 16px rgba(15,118,110,.25)); }
+.hk-hero__title { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; margin: 0.2rem 0 0; }
+.hk-hero__tagline { font-size: 1.05rem; color: var(--md-default-fg-color--light); max-width: 46rem; }
+.hk-hero__cta { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; margin-top: 0.8rem; }
+
+.hk-pills { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: center; margin-top: 0.4rem; }
+.hk-pill {
+  font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 999px;
+  background: color-mix(in srgb, var(--md-primary-fg-color) 12%, transparent);
+  color: var(--md-primary-fg-color);
+  border: 1px solid color-mix(in srgb, var(--md-primary-fg-color) 24%, transparent);
+}
+[data-md-color-scheme="slate"] .hk-pill { color: var(--md-primary-fg-color--light); }
+
+/* ---- Grid cards accent ----------------------------------------------------- */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border-radius: 12px;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 8px 24px rgba(15,118,110,.10);
+  transform: translateY(-2px);
+}
+
+/* ---- Mermaid diagrams: center and frame ------------------------------------ */
+.md-typeset .mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 1.2rem 0;
+  padding: 0.6rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 12px;
+  background: var(--md-code-bg-color);
+}
+
+/* ---- Version footer -------------------------------------------------------- */
+.hk-version-footer {
+  background: var(--md-primary-fg-color--dark);
+  color: #d6f0ed;
+  font-size: 0.72rem;
+}
+.hk-version-footer__inner {
+  max-width: 61rem; margin: 0 auto; padding: 0.5rem 1.2rem;
+  display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+}
+.hk-version-footer a { color: #ffffff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.4); }
+.hk-version-footer code { background: rgba(255,255,255,.12); color: #eafaf7; padding: 0 .3em; border-radius: 4px; }
+.hk-version-footer .hk-dot { opacity: .5; }
+.hk-badge {
+  background: #ffffff; color: var(--md-primary-fg-color--dark);
+  font-weight: 700; padding: 0.05rem 0.45rem; border-radius: 999px;
+}
+
+/* Make the repo link stand out a touch */
+.md-header__source { opacity: 0.95; }
+
+/* Certification gate status icons */
+.md-typeset .pass { color: #15803d; }
+.md-typeset .fail { color: #b91c1c; }

@@ -1,0 +1,30 @@
+{
+  "name": "nexusai-pro-desktop",
+  "productName": "Nexus AI Pro",
+  "version": "0.1.0",
+  "description": "Electron desktop shell for Nexus AI Pro — secure IPC, auto-update, native OS integration.",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "npm run build && electron .",
+    "dist": "npm run build && electron-builder",
+    "version:bump": "node scripts/version.mjs",
+    "prebuild": "node -e \"process.exit(0)\"",
+    "dist:win": "npm run build && electron-builder --win --publish never",
+    "dist:mac": "npm run build && electron-builder --mac --publish never",
+    "dist:linux": "npm run build && electron-builder --linux --publish never",
+    "release": "npm run build && electron-builder --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.4"
+  },
+  "devDependencies": {
+    "electron": "^32.1.2",
+    "electron-builder": "^25.0.5",
+    "@types/node": "^20.16.5",
+    "typescript": "^5.5.4",
+    "@electron/notarize": "^2.5.0"
+  }
+}

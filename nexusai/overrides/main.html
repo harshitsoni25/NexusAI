@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+<!-- Announcement bar: production-ready + version -->
+{% block announce %}
+  <a href="{{ config.repo_url }}/releases" target="_blank" rel="noopener">
+    <span class="twemoji">{% include ".icons/material/rocket-launch-outline.svg" %}</span>
+    <strong>Nexus AI v{{ config.extra.release }}</strong> is production-ready —
+    built on the frozen certified engine.
+  </a>
+{% endblock %}
+
+<!-- Version footer: keep the default footer (prev/next) then append a version line -->
+{% block footer %}
+  {{ super() }}
+  <div class="hk-version-footer" role="contentinfo">
+    <div class="hk-version-footer__inner">
+      <span class="hk-badge">v{{ config.extra.release }}</span>
+      <span>stable channel</span>
+      <span class="hk-dot">•</span>
+      <span>engine digest <code>{{ config.extra.engine_digest[:12] }}…</code></span>
+      <span class="hk-dot">•</span>
+      <a href="{{ config.repo_url }}">GitHub</a>
+      <span class="hk-dot">•</span>
+      <a href="{{ config.repo_url }}/releases">Releases</a>
+    </div>
+  </div>
+{% endblock %}

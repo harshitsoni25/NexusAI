@@ -1,0 +1,153 @@
+site_name: Nexus AI
+site_description: >-
+  Nexus AI — a certified, plugin-driven web-scraping platform: a scraping engine plus a
+  REST API, web and desktop apps, a scheduler, plugin management, reporting and multi-tenant
+  enterprise features.
+site_author: Nexus AI
+site_url: https://nexusai.github.io/nexusai/
+
+repo_name: nexusai/nexusai
+repo_url: https://github.com/nexusai/nexusai
+edit_uri: edit/main/docs/
+
+copyright: Copyright &copy; 2026 Nexus AI — released under the MIT License.
+
+theme:
+  name: material
+  custom_dir: overrides
+  logo: assets/images/logo.svg
+  favicon: assets/images/favicon.png
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+  font:
+    text: Inter
+    code: JetBrains Mono
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.path
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+
+plugins:
+  - search
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.caret
+
+extra:
+  release: 0.1.0
+  engine_digest: c28c2a748f0943bc10d79d6757d7258908b29f90d5c8b76b163e16c2391381e1
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nexusai/nexusai
+      name: Nexus AI on GitHub
+  generator: false
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quickstart: getting-started/quickstart.md
+      - Configuration: getting-started/configuration.md
+      - Concepts: getting-started/concepts.md
+      - FAQ: getting-started/faq.md
+      - Troubleshooting: getting-started/troubleshooting.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Dependency Injection: architecture/dependency-injection.md
+      - Request Lifecycle: architecture/request-lifecycle.md
+      - Scheduler: architecture/scheduler.md
+      - Plugin System: architecture/plugin-system.md
+      - Reporting: architecture/reporting.md
+      - Diagrams: architecture/diagrams.md
+  - Developer:
+      - Development: developer/development.md
+      - Testing: developer/testing.md
+      - Debugging: developer/debugging.md
+      - Project Structure: developer/project-structure.md
+  - Plugins:
+      - Plugin Development: plugins/plugin-development.md
+      - Plugin API: plugins/plugin-api.md
+      - Examples: plugins/examples.md
+  - API:
+      - CLI: api/cli.md
+      - Configuration: api/configuration.md
+      - Environment: api/environment.md
+  - Deployment:
+      - Docker: deployment/docker.md
+      - Desktop: deployment/desktop.md
+      - Release: deployment/release.md
+  - Quality:
+      - Testing Strategy: quality/testing-strategy.md
+      - CI/CD: quality/ci-cd.md
+      - Certification: quality/certification.md
+  - Administration:
+      - Scheduler: administration/scheduler.md
+      - Monitoring: administration/monitoring.md
+  - About:
+      - Roadmap: about/roadmap.md
+      - Changelog: about/changelog.md

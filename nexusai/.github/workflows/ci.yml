@@ -1,0 +1,142 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Cancel superseded runs on the same branch; the newest commit is the one that
+# matters and CI minutes are not free.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  NEXUSAI_ENVIRONMENT: ci
+
+jobs:
+  quality:
+    name: Quality gate (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,test,visual]"
+
+      # Each gate runs separately so that a failure names itself in the job
+      # summary rather than hiding inside a single opaque step.
+      - name: Formatting
+        run: black --check --diff src tests
+
+      - name: Linting
+        run: ruff check --output-format=github src tests
+
+      - name: Type checking
+        run: mypy
+
+      - name: Tests
+        run: pytest
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python-version }}
+          path: coverage.xml
+          if-no-files-found: warn
+
+  # Cross-platform portability: catches import failures, CLI startup failures and
+  # unit regressions on non-Linux runtimes (added after a Windows-only import defect
+  # in resource sampling). Formatting/linting/type-checking and coverage remain
+  # Linux-only in the quality job -- they are OS-independent and need not be
+  # multiplied across runners. Browser certification is out of scope here.
+  portability:
+    name: Portability (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["windows-latest", "macos-latest"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+
+      # runner.temp is only available in step contexts, not job-level env, so the
+      # per-OS writable root is set on each step that actually exercises the
+      # framework rather than once at the job level.
+      - name: Import smoke
+        env:
+          NEXUSAI_PATHS__ROOT: ${{ runner.temp }}/hk
+        run: python -c "import nexusai; from nexusai.composition.container import build_container; print(nexusai.__version__)"
+
+      - name: CLI startup
+        env:
+          NEXUSAI_PATHS__ROOT: ${{ runner.temp }}/hk
+        run: |
+          nexusai --version
+          nexusai doctor
+
+      - name: Tests (non-browser)
+        env:
+          NEXUSAI_PATHS__ROOT: ${{ runner.temp }}/hk
+        run: pytest -m "not browser" --no-cov
+
+  build:
+    name: Build verification
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build distributions
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+          python -m twine check dist/*
+
+      # Installing the built wheel into a clean environment verifies that the
+      # distribution is complete. A test suite run against the source tree will
+      # not catch a file that was never packaged.
+      - name: Verify the wheel installs and runs
+        run: |
+          python -m venv /tmp/verify
+          /tmp/verify/bin/pip install dist/*.whl
+          /tmp/verify/bin/nexusai --version
+          /tmp/verify/bin/nexusai plugins contracts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: distributions
+          path: dist/*

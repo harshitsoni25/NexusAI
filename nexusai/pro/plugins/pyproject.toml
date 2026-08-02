@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nexusai-pro-plugins"
+version = "0.1.0"
+description = "Plugin manager for Nexus AI Pro — install/update/enable/disable/remove/details/version management over the engine's existing plugin system."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = ["nexusai"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2", "mypy>=1.10", "ruff>=0.5"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["nexusai_pro_plugins"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["integration: installs a real fixture plugin distribution via pip"]
+
+[tool.ruff]
+line-length = 118
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["B008", "UP042"]

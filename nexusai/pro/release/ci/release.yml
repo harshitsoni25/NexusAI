@@ -1,0 +1,73 @@
+# HarvestKit Pro — release pipeline.
+# Place at repository root as .github/workflows/release.yml to enable.
+# Triggered on a version tag; builds, signs and publishes installers for all three
+# platforms plus the electron-updater manifests.
+
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write   # create the GitHub Release and upload assets
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            script: dist:win
+          - os: macos-latest
+            script: dist:mac
+          - os: ubuntu-latest
+            script: dist:linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # 1) Build the React renderer that the desktop app bundles.
+      - name: Build renderer
+        working-directory: pro/web
+        run: |
+          npm ci
+          npm run build
+
+      # 2) Build + package + publish the desktop app.
+      - name: Install desktop deps
+        working-directory: pro/desktop
+        run: npm ci
+
+      - name: Package and publish
+        working-directory: pro/desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Windows signing
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          # macOS notarization
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: npm run build && npx electron-builder --publish always
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: harvestkit-pro-${{ matrix.os }}
+          path: |
+            pro/desktop/release/*.exe
+            pro/desktop/release/*.dmg
+            pro/desktop/release/*.zip
+            pro/desktop/release/*.AppImage
+            pro/desktop/release/*.deb
+            pro/desktop/release/*.rpm
+            pro/desktop/release/latest*.yml
+          if-no-files-found: ignore

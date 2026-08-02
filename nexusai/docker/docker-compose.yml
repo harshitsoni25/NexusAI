@@ -1,0 +1,50 @@
+# Local development and test only. Deployment topology is out of scope.
+#
+#   docker compose -f docker/docker-compose.yml run --rm checks
+#   docker compose -f docker/docker-compose.yml run --rm cli diagnose
+
+name: nexusai
+
+services:
+  # Runs the full quality gate in an environment identical to CI.
+  checks:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: development
+    environment:
+      NEXUSAI_ENVIRONMENT: ci
+      NEXUSAI_LOGGING__CONSOLE__FORMAT: json
+      NEXUSAI_LOGGING__CONSOLE__COLORIZE: "false"
+    volumes:
+      # Source is mounted so a change is picked up without a rebuild. The named
+      # volume keeps container-built caches out of the host working tree.
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../config:/app/config
+      - nexusai-cache:/app/.cache
+    command: ["make", "check"]
+
+  # An interactive shell against the same image.
+  dev:
+    extends:
+      service: checks
+    command: ["bash"]
+    stdin_open: true
+    tty: true
+
+  # The packaged runtime image, for exercising the CLI as a user would.
+  cli:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: runtime
+    environment:
+      NEXUSAI_ENVIRONMENT: local
+    volumes:
+      - nexusai-data:/var/lib/nexusai
+    command: ["diagnose"]
+
+volumes:
+  nexusai-cache:
+  nexusai-data:

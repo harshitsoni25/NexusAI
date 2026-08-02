@@ -1,0 +1,52 @@
+# ---------------------------------------------------------------------------
+# Nexus AI built-in defaults.
+#
+# This is the lowest file-based layer of the precedence chain:
+#
+#   command line overrides  >  environment variables  >  user YAML
+#     >  this file  >  field defaults declared on the settings models
+#
+# Override anything here with a user config file (--config), an environment
+# variable (NEXUSAI_LOGGING__LEVEL=DEBUG), or a flag (--set logging.level=DEBUG).
+# Unknown keys are rejected, so a typo fails loudly instead of being ignored.
+# ---------------------------------------------------------------------------
+
+environment: local
+
+paths:
+  root: ./.nexusai
+  data: data
+  artifacts: artifacts
+  reports: reports
+  logs: logs
+  state: state
+
+logging:
+  level: INFO
+  include_correlation: true
+  # Variable values in tracebacks can contain secrets, and this output often
+  # ends up in shared log aggregation. Off unless deliberately enabled.
+  diagnose: false
+  console:
+    enabled: true
+    level: INFO
+    format: console
+    colorize: true
+  file:
+    enabled: false
+    filename: nexusai.log
+    level: DEBUG
+    format: json
+    rotation: 20 MB
+    retention: 14 days
+    compression: gz
+
+plugins:
+  discovery_enabled: true
+  entry_point_group: nexusai.plugins
+  # Module paths for plugins not installed as distributions, as module:attribute.
+  allowlist: []
+  # Names or qualified names to skip even when installed.
+  disabled: []
+  # Production deployments may prefer true, so that a missing plugin is loud.
+  fail_on_load_error: false

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nexusai-pro-scheduler"
+version = "0.1.0"
+description = "Scheduling for Nexus AI Pro — cron/daily/weekly/monthly, job queue, background execution, retry, notifications. Reuses the certified engine."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = ["nexusai"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2", "mypy>=1.10", "ruff>=0.5"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["nexusai_pro_scheduler"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["engine: reuses the real Nexus AI engine"]
+
+[tool.ruff]
+line-length = 118
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["B008", "UP042"]
