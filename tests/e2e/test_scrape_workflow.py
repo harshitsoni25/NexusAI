@@ -18,8 +18,8 @@ import pytest
 from typer.testing import CliRunner
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from nexusai.presentation.cli.app import app
 from mock_sites import product_listing, static_page
+from nexusai.presentation.cli.app import app
 
 pytestmark = pytest.mark.e2e
 
