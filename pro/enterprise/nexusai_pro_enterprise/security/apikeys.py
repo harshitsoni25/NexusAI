@@ -30,7 +30,9 @@ def generate_key(prefix: str) -> GeneratedKey:
     public_id = secrets.token_hex(4)
     secret = secrets.token_urlsafe(32)
     plaintext = f"{prefix}_{public_id}_{secret}"
-    return GeneratedKey(plaintext=plaintext, prefix=prefix, public_id=public_id, secret_hash=_hash(plaintext))
+    return GeneratedKey(
+        plaintext=plaintext, prefix=prefix, public_id=public_id, secret_hash=_hash(plaintext)
+    )
 
 
 def verify_key(presented: str, secret_hash: str) -> bool:

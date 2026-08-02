@@ -94,7 +94,9 @@ class Executor:
             state=RunState.RETRYING,
             not_before=datetime.now() + timedelta(seconds=delay),
         )
-        self._notify(job, RunState.RETRYING, f"retry {next_attempt}/{job.retry.max_attempts} in {delay:.0f}s")
+        self._notify(
+            job, RunState.RETRYING, f"retry {next_attempt}/{job.retry.max_attempts} in {delay:.0f}s"
+        )
         self._queue.put(retry_job)
 
     def _record(self, job: QueuedJob, started: datetime, state: RunState) -> None:

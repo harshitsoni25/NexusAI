@@ -15,7 +15,9 @@ class TeamService:
 
     def create(self, workspace_id: str, name: str, *, actor_id: str) -> Team:
         team = self._teams.add(Team(workspace_id=workspace_id, name=name))
-        self._audit.record(workspace_id, "team.created", actor_id=actor_id, target_type="team", target_id=team.id)
+        self._audit.record(
+            workspace_id, "team.created", actor_id=actor_id, target_type="team", target_id=team.id
+        )
         return team
 
     def get(self, team_id: str) -> Team:
@@ -31,12 +33,24 @@ class TeamService:
         team = self.get(team_id)
         team.member_ids.add(user_id)
         self._teams.update(team)
-        self._audit.record(team.workspace_id, "team.member_added", actor_id=actor_id, target_id=team_id, metadata={"user": user_id})
+        self._audit.record(
+            team.workspace_id,
+            "team.member_added",
+            actor_id=actor_id,
+            target_id=team_id,
+            metadata={"user": user_id},
+        )
         return team
 
     def remove_member(self, team_id: str, user_id: str, *, actor_id: str) -> Team:
         team = self.get(team_id)
         team.member_ids.discard(user_id)
         self._teams.update(team)
-        self._audit.record(team.workspace_id, "team.member_removed", actor_id=actor_id, target_id=team_id, metadata={"user": user_id})
+        self._audit.record(
+            team.workspace_id,
+            "team.member_removed",
+            actor_id=actor_id,
+            target_id=team_id,
+            metadata={"user": user_id},
+        )
         return team

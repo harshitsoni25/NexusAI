@@ -14,4 +14,6 @@ class Liveness(BaseModel):
 
 class Readiness(BaseModel):
     ready: bool
-    checks: dict[str, Any] = Field(default_factory=dict, description="Engine doctor report, best-effort.")
+    checks: dict[str, Any] = Field(
+        default_factory=dict, description="Engine doctor report, best-effort."
+    )

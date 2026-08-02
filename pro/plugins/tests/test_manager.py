@@ -38,7 +38,13 @@ def _entry(pid, dist="dist-" + "x", version="1.0.0", state=RuntimeState.LOADED):
         distribution=dist,
         distribution_version=version,
         state=state,
-        runtime=RuntimePlugin(name=pid, version=version, api_version="1.0", extension_point="exporter", description="d"),
+        runtime=RuntimePlugin(
+            name=pid,
+            version=version,
+            api_version="1.0",
+            extension_point="exporter",
+            description="d",
+        ),
     )
 
 
@@ -55,7 +61,11 @@ def test_list_and_details(tmp_path):
     assert [v.id for v in views] == ["csv-plus", "sitemap"]  # sorted
     assert all(v.enabled for v in views)
     detail = mgr.details("csv-plus")
-    assert detail and detail.runtime.version == "1.0.0" and detail.runtime.extension_point == "exporter"
+    assert (
+        detail
+        and detail.runtime.version == "1.0.0"
+        and detail.runtime.extension_point == "exporter"
+    )
     assert mgr.details("nope") is None
 
 

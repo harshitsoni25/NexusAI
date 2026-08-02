@@ -29,7 +29,9 @@ class EnablementStore:
 
     def _save(self) -> None:
         self._path.parent.mkdir(parents=True, exist_ok=True)
-        self._path.write_text(json.dumps({"disabled": sorted(self._disabled)}, indent=2), encoding="utf-8")
+        self._path.write_text(
+            json.dumps({"disabled": sorted(self._disabled)}, indent=2), encoding="utf-8"
+        )
 
     def is_enabled(self, plugin_id: str) -> bool:
         with self._lock:

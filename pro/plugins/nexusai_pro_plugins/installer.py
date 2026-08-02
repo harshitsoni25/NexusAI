@@ -69,4 +69,6 @@ class PluginInstaller:
     def _result(code: int, action: str, target: str, out: str, err: str) -> OperationResult:
         ok = code == 0
         message = f"{action} {'succeeded' if ok else 'failed'} for {target}"
-        return OperationResult(ok=ok, action=action, target=target, message=message, stdout=out, stderr=err)
+        return OperationResult(
+            ok=ok, action=action, target=target, message=message, stdout=out, stderr=err
+        )

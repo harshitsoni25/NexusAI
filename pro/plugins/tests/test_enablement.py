@@ -7,7 +7,7 @@ from nexusai_pro_plugins import EnablementStore
 
 def test_default_enabled_and_toggle(tmp_path):
     store = EnablementStore(tmp_path / "en.json")
-    assert store.is_enabled("p1") is True          # enabled unless explicitly disabled
+    assert store.is_enabled("p1") is True  # enabled unless explicitly disabled
     store.set_enabled("p1", False)
     assert store.is_enabled("p1") is False
     assert store.disabled_ids() == {"p1"}

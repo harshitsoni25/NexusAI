@@ -35,7 +35,9 @@ class WorkspaceService:
         self._audit = audit
         self._min_pw = min_password_length
 
-    def create_workspace(self, name: str, slug: str, *, owner_email: str, owner_password: str) -> tuple[Workspace, User]:
+    def create_workspace(
+        self, name: str, slug: str, *, owner_email: str, owner_password: str
+    ) -> tuple[Workspace, User]:
         if not _SLUG.match(slug):
             raise ValidationError("slug must be 3-40 chars, lowercase alphanumeric and hyphens")
         if self._workspaces.get_by_slug(slug):
@@ -55,7 +57,13 @@ class WorkspaceService:
                 roles={"owner"},
             )
         )
-        self._audit.record(workspace.id, "workspace.created", actor_id=owner.id, target_type="workspace", target_id=workspace.id)
+        self._audit.record(
+            workspace.id,
+            "workspace.created",
+            actor_id=owner.id,
+            target_type="workspace",
+            target_id=workspace.id,
+        )
         return workspace, owner
 
     def _seed_roles(self, workspace_id: str) -> None:
@@ -78,9 +86,13 @@ class WorkspaceService:
     def list(self) -> list[Workspace]:
         return self._workspaces.list()
 
-    def update_settings(self, workspace_id: str, settings: dict[str, str], *, actor_id: str) -> Workspace:
+    def update_settings(
+        self, workspace_id: str, settings: dict[str, str], *, actor_id: str
+    ) -> Workspace:
         workspace = self.get(workspace_id)
         workspace.settings.update(settings)
         self._workspaces.add(workspace)
-        self._audit.record(workspace_id, "workspace.settings_updated", actor_id=actor_id, target_id=workspace_id)
+        self._audit.record(
+            workspace_id, "workspace.settings_updated", actor_id=actor_id, target_id=workspace_id
+        )
         return workspace

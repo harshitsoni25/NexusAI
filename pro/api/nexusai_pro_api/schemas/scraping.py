@@ -6,15 +6,20 @@ from pydantic import BaseModel, Field
 
 
 class ScrapeRequest(BaseModel):
-    target: str = Field(..., description="URL or target identifier to scrape.", examples=["https://example.com"])
+    target: str = Field(
+        ..., description="URL or target identifier to scrape.", examples=["https://example.com"]
+    )
     dataset_id: str | None = Field(
-        default=None, description="Dataset to write into; a stable id is derived from the target when omitted."
+        default=None,
+        description="Dataset to write into; a stable id is derived from the target when omitted.",
     )
     export_formats: list[str] = Field(
-        default_factory=lambda: ["csv", "json"], description="Export formats produced by the workflow."
+        default_factory=lambda: ["csv", "json"],
+        description="Export formats produced by the workflow.",
     )
     report_formats: list[str] = Field(
-        default_factory=lambda: ["html", "json"], description="Report formats produced by the workflow."
+        default_factory=lambda: ["html", "json"],
+        description="Report formats produced by the workflow.",
     )
 
 
@@ -30,5 +35,7 @@ class ScrapeAccepted(BaseModel):
     state: str = Field(..., description="accepted | running | finished | failed")
     target: str
     dataset_id: str
-    job_id: str | None = Field(default=None, description="Engine job id, present once the scrape starts/finishes.")
+    job_id: str | None = Field(
+        default=None, description="Engine job id, present once the scrape starts/finishes."
+    )
     status_url: str = Field(..., description="Poll this URL for submission progress.")

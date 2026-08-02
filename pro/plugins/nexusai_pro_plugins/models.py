@@ -19,7 +19,7 @@ class PluginSource(str, Enum):
 
 
 class RuntimeState(str, Enum):
-    LOADED = "loaded"      # accepted by the engine's discovery
+    LOADED = "loaded"  # accepted by the engine's discovery
     REJECTED = "rejected"  # discovered but rejected (bad contract, import error, ...)
     NOT_LOADED = "not_loaded"  # present as a distribution but not accepted
 

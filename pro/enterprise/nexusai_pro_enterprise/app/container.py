@@ -63,15 +63,23 @@ class EnterpriseContainer:
         self.authorizer = Authorizer(self.roles)
         self.auth = AuthService(self.users, self.api_keys, self.tokens, self.audit)
         self.workspace_service = WorkspaceService(
-            self.workspaces, self.roles, self.users, self.audit,
+            self.workspaces,
+            self.roles,
+            self.users,
+            self.audit,
             min_password_length=self.config.min_password_length,
         )
         self.user_service = UserService(
-            self.users, self.roles, self.audit, min_password_length=self.config.min_password_length,
+            self.users,
+            self.roles,
+            self.audit,
+            min_password_length=self.config.min_password_length,
         )
         self.project_service = ProjectService(self.projects, self.audit)
         self.team_service = TeamService(self.teams, self.audit)
-        self.apikey_service = ApiKeyService(self.api_keys, self.audit, prefix=self.config.api_key_prefix)
+        self.apikey_service = ApiKeyService(
+            self.api_keys, self.audit, prefix=self.config.api_key_prefix
+        )
 
 
 def build_container(config: EnterpriseConfig | None = None) -> EnterpriseContainer:

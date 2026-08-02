@@ -109,9 +109,7 @@ def record_export(registry: MetricSink, manifest: ExportManifest) -> None:
     registry.observe(
         "nexusai.export.duration", manifest.duration_seconds, dimensions={"format": fmt}
     )
-    registry.observe(
-        "nexusai.export.bytes", float(manifest.size_bytes), dimensions={"format": fmt}
-    )
+    registry.observe("nexusai.export.bytes", float(manifest.size_bytes), dimensions={"format": fmt})
 
 
 def record_report(

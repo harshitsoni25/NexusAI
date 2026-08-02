@@ -46,11 +46,7 @@ class PluginManager:
         Pro consumers (API, scheduler) honour this set when deciding which plugins to
         act on. Disabling never uninstalls; it just removes a plugin from this set.
         """
-        return [
-            v.id
-            for v in self.list_plugins()
-            if v.state is RuntimeState.LOADED and v.enabled
-        ]
+        return [v.id for v in self.list_plugins() if v.state is RuntimeState.LOADED and v.enabled]
 
     # --- lifecycle --------------------------------------------------------
 
@@ -72,11 +68,15 @@ class PluginManager:
 
     def enable(self, plugin_id: str) -> OperationResult:
         self._enablement.set_enabled(plugin_id, True)
-        return OperationResult(ok=True, action="enable", target=plugin_id, message=f"{plugin_id} enabled")
+        return OperationResult(
+            ok=True, action="enable", target=plugin_id, message=f"{plugin_id} enabled"
+        )
 
     def disable(self, plugin_id: str) -> OperationResult:
         self._enablement.set_enabled(plugin_id, False)
-        return OperationResult(ok=True, action="disable", target=plugin_id, message=f"{plugin_id} disabled")
+        return OperationResult(
+            ok=True, action="disable", target=plugin_id, message=f"{plugin_id} disabled"
+        )
 
     # --- helpers ----------------------------------------------------------
 

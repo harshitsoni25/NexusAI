@@ -40,7 +40,9 @@ class ApiError(Exception):
 
 
 def not_found(resource: str, identifier: str) -> ApiError:
-    return ApiError(status.HTTP_404_NOT_FOUND, "not_found", f"{resource} '{identifier}' was not found")
+    return ApiError(
+        status.HTTP_404_NOT_FOUND, "not_found", f"{resource} '{identifier}' was not found"
+    )
 
 
 # Engine exception -> HTTP status. Order matters: most specific first.

@@ -11,7 +11,9 @@ from nexusai_pro_enterprise.errors import PermissionDenied
 
 def _ctx():
     c = build_container()
-    ws, owner = c.workspace_service.create_workspace("Acme", "acme", owner_email="o@acme.co", owner_password="password123")
+    ws, owner = c.workspace_service.create_workspace(
+        "Acme", "acme", owner_email="o@acme.co", owner_password="password123"
+    )
     return c, ws, owner
 
 

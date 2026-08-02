@@ -11,7 +11,9 @@ from .installer import PluginInstaller
 from .manager import PluginManager
 
 
-def build_manager(config: PluginManagerConfig | None = None, *, config_file: Path | None = None) -> PluginManager:
+def build_manager(
+    config: PluginManagerConfig | None = None, *, config_file: Path | None = None
+) -> PluginManager:
     """Build a PluginManager that reuses the engine's discovery and pip lifecycle."""
     config = config or PluginManagerConfig()
     catalog = EntryPointCatalog(

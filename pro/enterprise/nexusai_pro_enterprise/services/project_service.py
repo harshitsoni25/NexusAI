@@ -13,9 +13,19 @@ class ProjectService:
         self._projects = projects
         self._audit = audit
 
-    def create(self, workspace_id: str, name: str, key: str, *, description: str = "", actor_id: str) -> Project:
-        project = self._projects.add(Project(workspace_id=workspace_id, name=name, key=key, description=description))
-        self._audit.record(workspace_id, "project.created", actor_id=actor_id, target_type="project", target_id=project.id)
+    def create(
+        self, workspace_id: str, name: str, key: str, *, description: str = "", actor_id: str
+    ) -> Project:
+        project = self._projects.add(
+            Project(workspace_id=workspace_id, name=name, key=key, description=description)
+        )
+        self._audit.record(
+            workspace_id,
+            "project.created",
+            actor_id=actor_id,
+            target_type="project",
+            target_id=project.id,
+        )
         return project
 
     def get(self, project_id: str) -> Project:
@@ -31,12 +41,24 @@ class ProjectService:
         project = self.get(project_id)
         project.member_ids.add(user_id)
         self._projects.update(project)
-        self._audit.record(project.workspace_id, "project.member_added", actor_id=actor_id, target_id=project_id, metadata={"user": user_id})
+        self._audit.record(
+            project.workspace_id,
+            "project.member_added",
+            actor_id=actor_id,
+            target_id=project_id,
+            metadata={"user": user_id},
+        )
         return project
 
     def assign_team(self, project_id: str, team_id: str, *, actor_id: str) -> Project:
         project = self.get(project_id)
         project.team_ids.add(team_id)
         self._projects.update(project)
-        self._audit.record(project.workspace_id, "project.team_assigned", actor_id=actor_id, target_id=project_id, metadata={"team": team_id})
+        self._audit.record(
+            project.workspace_id,
+            "project.team_assigned",
+            actor_id=actor_id,
+            target_id=project_id,
+            metadata={"team": team_id},
+        )
         return project

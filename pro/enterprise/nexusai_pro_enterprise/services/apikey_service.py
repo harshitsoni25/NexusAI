@@ -25,12 +25,16 @@ class CreatedApiKey:
 
 
 class ApiKeyService:
-    def __init__(self, api_keys: ApiKeyRepository, audit: AuditService, *, prefix: str = "hk") -> None:
+    def __init__(
+        self, api_keys: ApiKeyRepository, audit: AuditService, *, prefix: str = "hk"
+    ) -> None:
         self._api_keys = api_keys
         self._audit = audit
         self._prefix = prefix
 
-    def create(self, workspace_id: str, name: str, *, created_by: str, scopes: set[str] | None = None) -> CreatedApiKey:
+    def create(
+        self, workspace_id: str, name: str, *, created_by: str, scopes: set[str] | None = None
+    ) -> CreatedApiKey:
         generated = generate_key(self._prefix)
         record = self._api_keys.add(
             ApiKey(
@@ -43,7 +47,13 @@ class ApiKeyService:
                 scopes=set(scopes or set()),
             )
         )
-        self._audit.record(workspace_id, "apikey.created", actor_id=created_by, target_type="apikey", target_id=record.id)
+        self._audit.record(
+            workspace_id,
+            "apikey.created",
+            actor_id=created_by,
+            target_type="apikey",
+            target_id=record.id,
+        )
         return CreatedApiKey(key=record, plaintext=generated.plaintext)
 
     def list(self, workspace_id: str) -> list[ApiKey]:

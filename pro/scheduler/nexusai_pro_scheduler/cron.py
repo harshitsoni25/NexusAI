@@ -70,7 +70,16 @@ def _to_int(token: str, index: int) -> int:
 class CronExpression:
     """A parsed cron expression that can compute its next firing time."""
 
-    __slots__ = ("minutes", "hours", "doms", "months", "dows", "_dom_restricted", "_dow_restricted", "raw")
+    __slots__ = (
+        "minutes",
+        "hours",
+        "doms",
+        "months",
+        "dows",
+        "_dom_restricted",
+        "_dow_restricted",
+        "raw",
+    )
 
     def __init__(self, expression: str) -> None:
         fields = expression.split()

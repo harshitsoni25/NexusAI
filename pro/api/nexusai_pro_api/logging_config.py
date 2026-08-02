@@ -40,7 +40,9 @@ class _TextFormatter(logging.Formatter):
     """A human-readable formatter for local development."""
 
     def format(self, record: logging.LogRecord) -> str:
-        base = f"{record.levelname:<7} [{request_id_var.get()}] {record.name}: {record.getMessage()}"
+        base = (
+            f"{record.levelname:<7} [{request_id_var.get()}] {record.name}: {record.getMessage()}"
+        )
         if record.exc_info:
             base = f"{base}\n{self.formatException(record.exc_info)}"
         return base

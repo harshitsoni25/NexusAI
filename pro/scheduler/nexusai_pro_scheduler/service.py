@@ -109,16 +109,30 @@ class SchedulerService:
         parse_cron(expression)  # validate up front
         return self._build(name, ScheduleKind.CRON, spec, retry, cron=expression)
 
-    def add_daily(self, name: str, at: str, spec: ScrapeSpec, *, retry: RetryPolicy | None = None) -> Schedule:
+    def add_daily(
+        self, name: str, at: str, spec: ScrapeSpec, *, retry: RetryPolicy | None = None
+    ) -> Schedule:
         return self._build(name, ScheduleKind.DAILY, spec, retry, at=at)
 
     def add_weekly(
-        self, name: str, at: str, weekdays: tuple[int, ...], spec: ScrapeSpec, *, retry: RetryPolicy | None = None
+        self,
+        name: str,
+        at: str,
+        weekdays: tuple[int, ...],
+        spec: ScrapeSpec,
+        *,
+        retry: RetryPolicy | None = None,
     ) -> Schedule:
         return self._build(name, ScheduleKind.WEEKLY, spec, retry, at=at, weekdays=weekdays)
 
     def add_monthly(
-        self, name: str, at: str, days: tuple[int, ...], spec: ScrapeSpec, *, retry: RetryPolicy | None = None
+        self,
+        name: str,
+        at: str,
+        days: tuple[int, ...],
+        spec: ScrapeSpec,
+        *,
+        retry: RetryPolicy | None = None,
     ) -> Schedule:
         return self._build(name, ScheduleKind.MONTHLY, spec, retry, at=at, days=days)
 
@@ -134,7 +148,9 @@ class SchedulerService:
         weekdays: tuple[int, ...] = (),
         days: tuple[int, ...] = (),
     ) -> Schedule:
-        schedule = Schedule(name=name, kind=kind, spec=spec, cron=cron, at=at, weekdays=weekdays, days=days)
+        schedule = Schedule(
+            name=name, kind=kind, spec=spec, cron=cron, at=at, weekdays=weekdays, days=days
+        )
         if retry is not None:
             schedule.retry = retry
         return self.add(schedule)
@@ -146,4 +162,3 @@ class SchedulerService:
     @property
     def queue_size(self) -> int:
         return self._queue.size()
-

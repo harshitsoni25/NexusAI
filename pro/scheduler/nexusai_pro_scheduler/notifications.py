@@ -54,7 +54,11 @@ class LoggingNotifier:
     """Writes each notification to the standard logging system."""
 
     def emit(self, notification: Notification) -> None:
-        level = logging.ERROR if notification.state in (RunState.FAILED, RunState.DEAD) else logging.INFO
+        level = (
+            logging.ERROR
+            if notification.state in (RunState.FAILED, RunState.DEAD)
+            else logging.INFO
+        )
         logger.log(level, "%s", json.dumps(notification.to_dict()))
 
 
@@ -75,8 +79,12 @@ class WebhookNotifier:
     def emit(self, notification: Notification) -> None:
         try:
             data = json.dumps(notification.to_dict()).encode("utf-8")
-            request = urllib.request.Request(self._url, data=data, headers={"Content-Type": "application/json"})
-            urllib.request.urlopen(request, timeout=self._timeout).close()  # noqa: S310 - explicit http(s) webhook
+            request = urllib.request.Request(
+                self._url, data=data, headers={"Content-Type": "application/json"}
+            )
+            urllib.request.urlopen(
+                request, timeout=self._timeout
+            ).close()  # noqa: S310 - explicit http(s) webhook
         except Exception as exc:  # noqa: BLE001 - notifications never break scheduling
             logger.warning("webhook notify failed: %s", exc)
 

@@ -53,7 +53,11 @@ class InMemoryUserRepository(_Base):
     def get_by_email(self, workspace_id: str, email: str) -> User | None:
         email = email.lower()
         return next(
-            (u for u in self._by_id.values() if u.workspace_id == workspace_id and u.email.lower() == email),
+            (
+                u
+                for u in self._by_id.values()
+                if u.workspace_id == workspace_id and u.email.lower() == email
+            ),
             None,
         )
 
@@ -176,7 +180,12 @@ class InMemoryAuditRepository(_Base):
             return entry
 
     def query(
-        self, workspace_id: str, *, actor_id: str | None = None, action: str | None = None, limit: int = 100
+        self,
+        workspace_id: str,
+        *,
+        actor_id: str | None = None,
+        action: str | None = None,
+        limit: int = 100,
     ) -> list[AuditEntry]:
         result = [
             e

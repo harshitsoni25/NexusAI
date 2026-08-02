@@ -6,7 +6,9 @@ from pydantic import BaseModel, Field
 
 
 class ReportRequest(BaseModel):
-    dataset_id: str = Field(..., description="Dataset to report on (latest stored version is used).")
+    dataset_id: str = Field(
+        ..., description="Dataset to report on (latest stored version is used)."
+    )
     format: str = Field(..., description="Report format, e.g. html, json.", examples=["html"])
 
 

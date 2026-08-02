@@ -61,7 +61,9 @@ def test_due_schedule_is_executed_in_background():
         # force next_run into the past so it fires immediately
         service.list_schedules()[0].next_run = datetime.now() - timedelta(seconds=1)
         assert _wait_until(lambda: runner.calls >= 1)
-        assert _wait_until(lambda: any(n.state == RunState.SUCCEEDED for n in notifier.notifications))
+        assert _wait_until(
+            lambda: any(n.state == RunState.SUCCEEDED for n in notifier.notifications)
+        )
     runs = service.runs()
     assert any(r.state == RunState.SUCCEEDED for r in runs)
 
@@ -76,7 +78,9 @@ def test_retry_then_success_with_notifications():
         service.add(schedule)
         schedule.next_run = datetime.now() - timedelta(seconds=1)
         assert _wait_until(lambda: runner.calls >= 3, timeout=5)
-        assert _wait_until(lambda: any(n.state == RunState.SUCCEEDED for n in notifier.notifications))
+        assert _wait_until(
+            lambda: any(n.state == RunState.SUCCEEDED for n in notifier.notifications)
+        )
     states = [n.state for n in notifier.notifications]
     assert states.count(RunState.RETRYING) == 2
     assert RunState.SUCCEEDED in states
@@ -91,7 +95,9 @@ def test_retry_exhaustion_marks_dead():
     with service:
         service.add(schedule)
         schedule.next_run = datetime.now() - timedelta(seconds=1)
-        assert _wait_until(lambda: any(n.state == RunState.DEAD for n in notifier.notifications), timeout=5)
+        assert _wait_until(
+            lambda: any(n.state == RunState.DEAD for n in notifier.notifications), timeout=5
+        )
     assert runner.calls == 2  # max_attempts
 
 

@@ -25,8 +25,7 @@ def _write_fixture(root: Path) -> Path:
     pkg = root / "hk_fixture_plugin"
     pkg.mkdir(parents=True, exist_ok=True)
     (pkg / "__init__.py").write_text(
-        textwrap.dedent(
-            '''
+        textwrap.dedent('''
             """A minimal valid Nexus AI plugin used as a test fixture."""
             from nexusai.domain.model.plugin import ApiVersion, ExtensionPoint, PluginMetadata
 
@@ -52,13 +51,11 @@ def _write_fixture(root: Path) -> Path:
 
             def build() -> FixtureExporter:
                 return FixtureExporter()
-            '''
-        ),
+            '''),
         encoding="utf-8",
     )
     (root / "pyproject.toml").write_text(
-        textwrap.dedent(
-            f'''
+        textwrap.dedent(f"""
             [build-system]
             requires = ["hatchling"]
             build-backend = "hatchling.build"
@@ -74,15 +71,16 @@ def _write_fixture(root: Path) -> Path:
 
             [tool.hatch.build.targets.wheel]
             packages = ["hk_fixture_plugin"]
-            '''
-        ),
+            """),
         encoding="utf-8",
     )
     return root
 
 
 def _pip(*args: str) -> int:
-    return subprocess.run([sys.executable, "-m", "pip", *args], capture_output=True, text=True).returncode
+    return subprocess.run(
+        [sys.executable, "-m", "pip", *args], capture_output=True, text=True
+    ).returncode
 
 
 @pytest.mark.integration

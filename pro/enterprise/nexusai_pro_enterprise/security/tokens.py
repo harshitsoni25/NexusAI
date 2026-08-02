@@ -30,8 +30,8 @@ def _b64u_decode(text: str) -> bytes:
 
 @dataclass(slots=True)
 class TokenClaims:
-    sub: str          # user id
-    ws: str           # workspace id
+    sub: str  # user id
+    ws: str  # workspace id
     email: str
     roles: list[str]
     iat: int
@@ -57,7 +57,9 @@ class TokenService:
             "exp": now + self._ttl,
             "iss": self._issuer,
         }
-        signing_input = f"{_b64u(json.dumps(header).encode())}.{_b64u(json.dumps(payload).encode())}"
+        signing_input = (
+            f"{_b64u(json.dumps(header).encode())}.{_b64u(json.dumps(payload).encode())}"
+        )
         signature = hmac.new(self._secret, signing_input.encode(), hashlib.sha256).digest()
         return f"{signing_input}.{_b64u(signature)}"
 

@@ -10,7 +10,9 @@ from pydantic import BaseModel, Field
 class JobSummary(BaseModel):
     job_id: str
     target: str | None = None
-    state: str | None = Field(default=None, description="Engine job state (e.g. completed, failed, running).")
+    state: str | None = Field(
+        default=None, description="Engine job state (e.g. completed, failed, running)."
+    )
     dataset_id: str | None = None
 
     @classmethod
@@ -24,7 +26,9 @@ class JobSummary(BaseModel):
 
 
 class JobDetail(JobSummary):
-    detail: dict[str, Any] = Field(default_factory=dict, description="Engine-provided job detail, best-effort.")
+    detail: dict[str, Any] = Field(
+        default_factory=dict, description="Engine-provided job detail, best-effort."
+    )
 
     @classmethod
     def from_engine(cls, job: Any) -> JobDetail:

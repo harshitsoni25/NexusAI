@@ -49,7 +49,9 @@ class UserService:
                 roles=set(roles or {"member"}),
             )
         )
-        self._audit.record(workspace_id, "user.created", actor_id=actor_id, target_type="user", target_id=user.id)
+        self._audit.record(
+            workspace_id, "user.created", actor_id=actor_id, target_type="user", target_id=user.id
+        )
         return user
 
     def get(self, user_id: str) -> User:
@@ -68,14 +70,25 @@ class UserService:
         user = self.get(user_id)
         user.roles = set(roles)
         self._users.update(user)
-        self._audit.record(workspace_id, "user.roles_changed", actor_id=actor_id, target_id=user_id, metadata={"roles": ",".join(sorted(roles))})
+        self._audit.record(
+            workspace_id,
+            "user.roles_changed",
+            actor_id=actor_id,
+            target_id=user_id,
+            metadata={"roles": ",".join(sorted(roles))},
+        )
         return user
 
     def set_active(self, workspace_id: str, user_id: str, active: bool, *, actor_id: str) -> User:
         user = self.get(user_id)
         user.active = active
         self._users.update(user)
-        self._audit.record(workspace_id, "user.enabled" if active else "user.disabled", actor_id=actor_id, target_id=user_id)
+        self._audit.record(
+            workspace_id,
+            "user.enabled" if active else "user.disabled",
+            actor_id=actor_id,
+            target_id=user_id,
+        )
         return user
 
     def delete(self, workspace_id: str, user_id: str, *, actor_id: str) -> bool:

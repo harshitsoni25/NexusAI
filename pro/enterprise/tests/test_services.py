@@ -13,7 +13,9 @@ from nexusai_pro_enterprise import (
 
 def _bootstrap():
     c = build_container()
-    ws, owner = c.workspace_service.create_workspace("Acme", "acme", owner_email="owner@acme.co", owner_password="password123")
+    ws, owner = c.workspace_service.create_workspace(
+        "Acme", "acme", owner_email="owner@acme.co", owner_password="password123"
+    )
     return c, ws, owner
 
 
@@ -37,7 +39,9 @@ def test_full_lifecycle_users_teams_projects_apikeys_audit():
     c, ws, owner = _bootstrap()
 
     # users
-    dev = c.user_service.create_user(ws.id, "dev@acme.co", "password123", roles={"member"}, actor_id=owner.id)
+    dev = c.user_service.create_user(
+        ws.id, "dev@acme.co", "password123", roles={"member"}, actor_id=owner.id
+    )
     with pytest.raises(ConflictError):
         c.user_service.create_user(ws.id, "dev@acme.co", "password123", actor_id=owner.id)
     c.user_service.set_roles(ws.id, dev.id, {"admin"}, actor_id=owner.id)
@@ -66,13 +70,22 @@ def test_full_lifecycle_users_teams_projects_apikeys_audit():
 
     # audit captured every action, newest first
     actions = [e.action for e in c.audit.query(ws.id, limit=100)]
-    for expected in ("workspace.created", "user.created", "team.created", "project.created", "apikey.created", "apikey.revoked"):
+    for expected in (
+        "workspace.created",
+        "user.created",
+        "team.created",
+        "project.created",
+        "apikey.created",
+        "apikey.revoked",
+    ):
         assert expected in actions
 
 
 def test_tenant_isolation():
     c, ws_a, owner_a = _bootstrap()
-    ws_b, _ = c.workspace_service.create_workspace("Beta", "beta", owner_email="o@beta.co", owner_password="password123")
+    ws_b, _ = c.workspace_service.create_workspace(
+        "Beta", "beta", owner_email="o@beta.co", owner_password="password123"
+    )
     c.user_service.create_user(ws_a.id, "a@acme.co", "password123", actor_id=owner_a.id)
     # workspace B cannot see workspace A's users
     assert all(u.workspace_id == ws_b.id for u in c.user_service.list(ws_b.id))
@@ -80,6 +93,7 @@ def test_tenant_isolation():
 
 
 # --- FastAPI integration smoke ---------------------------------------------
+
 
 def test_api_end_to_end():
     from fastapi.testclient import TestClient
@@ -89,9 +103,15 @@ def test_api_end_to_end():
     app = create_enterprise_app()
     with TestClient(app) as client:
         # create workspace + owner
-        r = client.post("/api/enterprise/workspaces", json={
-            "name": "Acme", "slug": "acme", "owner_email": "owner@acme.co", "owner_password": "password123",
-        })
+        r = client.post(
+            "/api/enterprise/workspaces",
+            json={
+                "name": "Acme",
+                "slug": "acme",
+                "owner_email": "owner@acme.co",
+                "owner_password": "password123",
+            },
+        )
         assert r.status_code == 201, r.text
         ws_id = r.json()["workspace"]["id"]
 
@@ -99,27 +119,57 @@ def test_api_end_to_end():
         assert client.get("/api/enterprise/users").status_code == 401
 
         # login -> token
-        token = client.post("/api/enterprise/auth/login", json={"workspace_id": ws_id, "email": "owner@acme.co", "password": "password123"}).json()["token"]
+        token = client.post(
+            "/api/enterprise/auth/login",
+            json={"workspace_id": ws_id, "email": "owner@acme.co", "password": "password123"},
+        ).json()["token"]
         auth = {"Authorization": f"Bearer {token}"}
 
         assert client.get("/api/enterprise/me", headers=auth).json()["roles"] == ["owner"]
 
         # create a user, project, team, api key
-        assert client.post("/api/enterprise/users", headers=auth, json={"email": "dev@acme.co", "password": "password123", "roles": ["member"]}).status_code == 201
-        assert client.post("/api/enterprise/projects", headers=auth, json={"name": "PM", "key": "PM"}).status_code == 201
-        assert client.post("/api/enterprise/teams", headers=auth, json={"name": "Crawlers"}).status_code == 201
+        assert (
+            client.post(
+                "/api/enterprise/users",
+                headers=auth,
+                json={"email": "dev@acme.co", "password": "password123", "roles": ["member"]},
+            ).status_code
+            == 201
+        )
+        assert (
+            client.post(
+                "/api/enterprise/projects", headers=auth, json={"name": "PM", "key": "PM"}
+            ).status_code
+            == 201
+        )
+        assert (
+            client.post(
+                "/api/enterprise/teams", headers=auth, json={"name": "Crawlers"}
+            ).status_code
+            == 201
+        )
         key_resp = client.post("/api/enterprise/api-keys", headers=auth, json={"name": "ci"})
         assert key_resp.status_code == 201
         api_key = key_resp.json()["api_key"]
 
         # the API key authenticates too
-        assert client.get("/api/enterprise/me", headers={"X-API-Key": api_key}).json()["via"] == "api_key"
+        assert (
+            client.get("/api/enterprise/me", headers={"X-API-Key": api_key}).json()["via"]
+            == "api_key"
+        )
 
         # audit log is populated and permission-guarded
         audit = client.get("/api/enterprise/audit", headers=auth)
         assert audit.status_code == 200 and any(e["action"] == "user.created" for e in audit.json())
 
         # a viewer-less member token cannot manage users (403)
-        dev_token = client.post("/api/enterprise/auth/login", json={"workspace_id": ws_id, "email": "dev@acme.co", "password": "password123"}).json()["token"]
-        forbidden = client.post("/api/enterprise/users", headers={"Authorization": f"Bearer {dev_token}"}, json={"email": "x@acme.co", "password": "password123"})
+        dev_token = client.post(
+            "/api/enterprise/auth/login",
+            json={"workspace_id": ws_id, "email": "dev@acme.co", "password": "password123"},
+        ).json()["token"]
+        forbidden = client.post(
+            "/api/enterprise/users",
+            headers={"Authorization": f"Bearer {dev_token}"},
+            json={"email": "x@acme.co", "password": "password123"},
+        )
         assert forbidden.status_code == 403
