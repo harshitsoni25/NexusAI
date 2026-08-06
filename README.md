@@ -1,7 +1,7 @@
 # Nexus AI
 
 **Nexus AI** is a production-grade web-scraping platform: a certified, plugin-driven
-scraping engine and a suite of applications built around it — a REST API, web and desktop
+scraping engine and a suite of applications built around it - a REST API, web and desktop
 clients, a scheduler, plugin management, analytics and multi-tenant enterprise features.
 
 [![Docs](https://img.shields.io/badge/docs-mkdocs--material-0f766e)](https://nexusai.github.io/nexusai/)
