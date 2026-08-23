@@ -16,12 +16,20 @@ files:
   - src/splash.html
   - src/about.html
 
-# The built React renderer (pro/web/dist) ships as the app's UI.
+# The built React renderer (pro/web/dist) ships as the app's UI, alongside the
+# self-contained Python runtime, backend and Chromium assembled by
+# scripts/bundle-runtime.mjs. These make the app fully standalone — the user installs no
+# Python, pip or browser. They are copied verbatim into the app's resources/ (outside the
+# asar), so the interpreter and browser binaries remain executable.
 extraResources:
   - from: ../web/dist
     to: renderer
   - from: build-info.json
     to: build-info.json
+  - from: resources/python
+    to: python
+  - from: resources/ms-playwright
+    to: ms-playwright
 
 # afterSign runs notarization on macOS (no-op on other platforms / without creds).
 afterSign: notarize.cjs
@@ -30,8 +38,8 @@ afterSign: notarize.cjs
 # electron-updater reads the published latest*.yml from this provider.
 publish:
   - provider: github
-    owner: your-org
-    repo: nexusai-pro
+    owner: harshitsoni25
+    repo: NexusAI
     releaseType: release
 
 # ---- Windows installer ------------------------------------------------------

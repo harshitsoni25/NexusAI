@@ -36,3 +36,6 @@ config/local.yaml
 .vscode/
 *.swp
 .DS_Store
+
+# Node dependencies
+**/node_modules/

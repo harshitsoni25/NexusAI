@@ -12,10 +12,11 @@
     "dist": "npm run build && electron-builder",
     "version:bump": "node scripts/version.mjs",
     "prebuild": "node -e \"process.exit(0)\"",
-    "dist:win": "npm run build && electron-builder --win --publish never",
-    "dist:mac": "npm run build && electron-builder --mac --publish never",
-    "dist:linux": "npm run build && electron-builder --linux --publish never",
-    "release": "npm run build && electron-builder --publish always"
+    "bundle": "node scripts/bundle-runtime.mjs",
+    "dist:win": "npm run bundle && npm run build && electron-builder --win --publish never",
+    "dist:mac": "npm run bundle && npm run build && electron-builder --mac --publish never",
+    "dist:linux": "npm run bundle && npm run build && electron-builder --linux --publish never",
+    "release": "npm run bundle && npm run build && electron-builder --publish always"
   },
   "dependencies": {
     "electron-updater": "^6.3.4"
