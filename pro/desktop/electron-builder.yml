@@ -65,12 +65,9 @@ nsis:
 
 # ---- macOS bundle -----------------------------------------------------------
 mac:
-  icon: build/icon.icns
   category: public.app-category.developer-tools
   hardenedRuntime: true
   gatekeeperAssess: false
-  entitlements: build/entitlements.mac.plist
-  entitlementsInherit: build/entitlements.mac.inherit.plist
   target:
     - target: dmg
       arch: [x64, arm64]
@@ -95,6 +92,7 @@ linux:
   category: Development
   synopsis: Desktop client for the Nexus AI Pro web-scraping platform
   description: Nexus AI Pro desktop application.
+  maintainer: "harshit.2502@gmail.com"
   desktop:
     Name: Nexus AI Pro
     Comment: Nexus AI Pro desktop client

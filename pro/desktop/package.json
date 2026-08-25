@@ -1,8 +1,13 @@
 {
   "name": "nexusai-pro-desktop",
   "productName": "Nexus AI Pro",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "Electron desktop shell for Nexus AI Pro — secure IPC, auto-update, native OS integration.",
+  "author": {
+    "name": "Harshit Soni",
+    "email": "harshit.2502@gmail.com"
+  },
+  "homepage": "https://github.com/harshitsoni25/NexusAI",
   "private": true,
   "main": "dist-electron/main.js",
   "scripts": {
