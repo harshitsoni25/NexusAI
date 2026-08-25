@@ -60,7 +60,6 @@ nsis:
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: Nexus AI Pro
-  include: build/installer.nsh
   artifactName: ${productName}-Setup-${version}-${arch}.${ext}
   uninstallDisplayName: Nexus AI Pro ${version}
 

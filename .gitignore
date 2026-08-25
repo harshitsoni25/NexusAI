@@ -42,3 +42,7 @@ config/local.yaml
 
 # Generated desktop runtime bundle
 pro/desktop/resources/
+
+# Electron build output
+pro/desktop/dist-electron/
+pro/desktop/release/
